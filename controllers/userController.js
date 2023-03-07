@@ -3,9 +3,9 @@ const bcrypt = require('bcryptjs')
 const cookieToken = require("../utils/cookieTOken")
 
 exports.register = async(req,res) => {
-    const {email , password , username} = req.body
+    
     try {
-
+        const {email , password , username} = req.body
         const encryptedPassword = await bcrypt.hash(password , 10)
         const user = await User.create({
             username,email, password: encryptedPassword
@@ -66,6 +66,35 @@ exports.logout = async(req,res) => {
     } catch(err) {
         return res.status(500).json({
             message : `Something went wrong in logging you out: ${err.message}`
+        })
+    }
+}
+
+exports.changePassword = async(req,res) => {
+    try {
+        let id = req.user.id;
+        let {oldPassword , newPassword} = req.body
+
+        let user = await User.findById(id)
+
+        if(!bcrypt.compare(oldPassword , user.password)){
+            return res.status(401).json({
+                message : "Old password is not matching"
+            })
+        }
+
+        user.password = req.password.newPassword
+
+        await user.save({validateBeforeSave : false})
+
+        res.status(200).json({
+            success : true,
+            message : "Password changed successfully",
+            user
+        })
+    } catch(err) {
+        return res.status(500).json({
+            message : "Something went wrong in changing password"
         })
     }
 }
