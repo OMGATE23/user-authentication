@@ -1,8 +1,10 @@
-const express = require('express')
-const router = express.Router()
+const express = require("express");
+const { register, login, logout } = require("../controllers/userController");
+const { isNotLoggedIn } = require("../middleware/user");
+const router = express.Router();
 
-router.get('/message' , (req,res) => {
-    res.send("The goated user but on a new route")
-})
+router.route("/register").post(isNotLoggedIn , register);
+router.route("/login").post(isNotLoggedIn, login);
+router.route("/logout").get(logout);
 
-module.exports = router
+module.exports = router;
