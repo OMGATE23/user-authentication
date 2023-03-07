@@ -5,6 +5,7 @@ const connectToDB = require('./config/db')
 require('dotenv').config()
 
 connectToDB()
+app.use(express.json())
 
 app.use('/user' , userRoute)
 
